@@ -1,0 +1,22 @@
+{
+  "name": "code-reading-branch",
+  "owner": {
+    "name": "kkmilet",
+    "email": "1147721057@qq.com"
+  },
+  "metadata": {
+    "description": "帮初级工程师接手陌生项目：还原启动链路、排阅读路线、在独立分支写注释，并证明没改业务代码",
+    "version": "1.5.1"
+  },
+  "plugins": [
+    {
+      "name": "code-reading-branch",
+      "description": "代码领读：只读分析一个陌生仓库，产出阅读路线、旅程图、中文注释分支和改动地图，目标是能二次开发",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/code-reading-branch"
+      ]
+    }
+  ]
+}
