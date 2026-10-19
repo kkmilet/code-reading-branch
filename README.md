@@ -67,8 +67,6 @@ cd code-reading-branch && git pull
 cp -r skills/code-reading-branch ~/.workbuddy/skills/
 ```
 
-> 仓库当前是 **private**。别人 clone 或 marketplace add 之前，需要把仓库改成 public，或把对方加成 collaborator。
-
 ## 使用
 
 给它一个仓库路径和一句意图：
