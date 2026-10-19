@@ -14,22 +14,60 @@
 | `reading/<日期>` 分支上的三档注释 | 注释长在代码旁边，跳转不丢上下文 |
 | 改动地图 + 能力清单 + 踩坑 | 从"读懂"到"能改" |
 
+## 环境要求
+
+- 支持 `SKILL.md` 的 Agent：WorkBuddy / Claude Code / Cursor / Codex / Gemini CLI
+- Python 3.8+（只有三个校验脚本需要，不用脚本可以不装）
+
 ## 安装
 
-**方式一：直接拷贝**
+### 1. 克隆
 
 ```bash
 git clone https://github.com/kkmilet/code-reading-branch.git
+```
+
+### 2. 放进 Agent 的 skills 目录
+
+| Agent | 目录 |
+|---|---|
+| WorkBuddy | `~/.workbuddy/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+| Codex | `~/.codex/skills/` |
+| Gemini CLI | `~/.gemini/skills/` |
+
+```bash
 cp -r code-reading-branch/skills/code-reading-branch ~/.workbuddy/skills/
 ```
 
-Claude Code、Cursor、Codex 等支持 `SKILL.md` 的工具同理，把目录放进各自的 skills 目录即可。
+Windows 把 `~/.workbuddy/skills/` 换成 `%USERPROFILE%\.workbuddy\skills\`。
 
-**方式二：插件市场**
+没有 git 也可以：下载仓库 zip，把 `skills/code-reading-branch` 解压到上面的目录。
+
+### 3. 验证
+
+```bash
+python ~/.workbuddy/skills/code-reading-branch/scripts/lint.py \
+  ~/.workbuddy/skills/code-reading-branch/examples/READING.sample.md
+```
+
+输出 `✅ READING.sample.md 结构检查通过` 就装好了。
+
+### 插件市场（可选）
 
 ```
 /plugin marketplace add kkmilet/code-reading-branch
 ```
+
+### 升级
+
+```bash
+cd code-reading-branch && git pull
+cp -r skills/code-reading-branch ~/.workbuddy/skills/
+```
+
+> 仓库当前是 **private**。别人 clone 或 marketplace add 之前，需要把仓库改成 public，或把对方加成 collaborator。
 
 ## 使用
 
