@@ -87,7 +87,7 @@ agent = CodeAgent(tools=[WebSearchTool()], model=model, stream_outputs=True)
 agent.run("How many seconds would it take for a leopard at full speed to run through Pont des Arts?")
 ```
 
-这段话对应主链路的 ①→⑧：`run` 进循环、`CodeAgent` 走 `_step_stream`、`generate` 调模型、执行器跑代码、结果回到 Memory。
+这段代码走完整条主链：`run` 进循环，`CodeAgent` 走 `_step_stream`，`generate` 调模型，执行器跑代码，结果回到 Memory。
 
 ## 五、过期说明
 

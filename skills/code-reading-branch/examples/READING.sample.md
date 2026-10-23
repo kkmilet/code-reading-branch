@@ -5,7 +5,7 @@ base_commit: a1b2c3d
 annotated: 24 / 187 files
 ---
 
-# shop · 阅读导航
+# shop 阅读导航
 
 ## 0. 一句话画像
 
@@ -26,19 +26,19 @@ B2C 商城后端，给小程序和 H5 提供下单、支付、售后接口。6 �
 
 ## 2. 阅读路线（8 站，按依赖方向）
 
-### 第 1 站 · 配置与外部依赖（约 40 分钟）
+### 第 1 站：配置与外部依赖（约 40 分钟）
 
 **为什么排这**：库版本和外部服务能在这里一次看完。
 **要读**：`config/settings.py`、`.env.example`、`docker-compose.yml`
 **读完你应该能说出**：连哪个库、有哪几个外部服务、密钥从哪来。
 
-### 第 2 站 · 订单数据模型（约 40 分钟）
+### 第 2 站：订单数据模型（约 40 分钟）
 
 **为什么排这**：状态枚举只在这里定义，第 3 站全靠它。
 **要读**：`apps/orders/models.py`、`apps/orders/migrations/0001_initial.py`（只看字段）
 **读完你应该能说出**：订单有哪几个状态、怎么流转、和支付/库存什么关系。
 
-### 第 3 站 · 下单主链路（约 60 分钟）
+### 第 3 站：下单主链路（约 60 分钟）
 
 **为什么排这**：近三个月改动最多的三个文件都在这。
 **要读**：`apps/orders/views.py`、`apps/orders/schemas.py`、`apps/orders/services/order.py`、`apps/orders/clients/inventory.py`
@@ -50,19 +50,19 @@ B2C 商城后端，给小程序和 H5 提供下单、支付、售后接口。6 �
 
 ```mermaid
 flowchart TD
-    A["① config/urls.py · URLConf<br/>POST /api/orders 匹配到 OrderCreateView"] -->|HTTP 请求体 JSON| B["② orders/views.py · OrderCreateView.post<br/>校验参数，不合法直接 400"]
-    B -->|已校验的 dict| C["③ services/order.py · OrderService.create<br/>扣库存 → 建订单，事务边界在这里"]
-    C -->|Order 实例| D["④ orders/models.py · Order.save<br/>写 orders 表，触发 created 信号"]
-    D -->|落库结果| E["⑤ OrderDetailSerializer<br/>序列化成 JSON，返回 201"]
-    D -.->|order.created 事件| F["⑥ Celery · tasks/notify.py<br/>发通知，失败重试 3 次"]
+    A["1. 匹配路由<br/>config/urls.py 的 URLConf"] -->|HTTP 请求体 JSON| B["2. 校验参数，不合法返回 400<br/>orders/views.py 的 OrderCreateView.post"]
+    B -->|校验后的 dict| C["3. 扣库存、建订单<br/>services/order.py 的 OrderService.create"]
+    C -->|Order 实例| D["4. 写 orders 表<br/>orders/models.py 的 Order.save"]
+    D -->|落库结果| E["5. 转成 JSON，返回 201<br/>OrderDetailSerializer"]
+    D -.->|order.created 事件| F["6. 发通知，失败重试 3 次<br/>tasks/notify.py 的 send_notice"]
 ```
 
-① 承接小程序的下单请求；③ 最复杂，因为它同时碰库存和订单两张"账"，而这两个存储没有共同事务。
+第 1 步承接小程序的下单请求。第 3 步最复杂，它同时碰库存和订单两张账，而这两个存储没有共同事务。
 
-⑥ 是虚线：**下单接口不等通知完成，通知失败不影响下单成功**。改这块时不用怕通知报错把订单回滚。
+第 6 步是虚线：下单接口不等通知完成，通知失败不影响下单成功。
 
-> ⚠️ 已知坑：③ 扣库存成功、④ 写库失败时，库存不会回滚。
-> 未找到补偿逻辑——搜索范围：`services/order.py` 全文 + 全仓 `grep -rn "rollback\|compensat\|release"`（0 命中）。**搜不到不等于不存在**，若你们有对账任务兜底，这条可以降级。
+> 已知坑：第 3 步扣库存成功、第 4 步写库失败时，库存不会回滚。
+> 未找到补偿逻辑，搜索范围是 `services/order.py` 全文加全仓 `grep -rn "rollback|compensat|release"`，0 命中。搜不到不等于不存在。
 
 ## 4. 模块地图
 

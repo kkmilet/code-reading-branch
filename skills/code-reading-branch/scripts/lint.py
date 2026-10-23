@@ -174,8 +174,8 @@ def main() -> int:
         joined = "\n".join(body)
         if "```mermaid" not in joined:
             errors.append("旅程图缺少 mermaid 代码块")
-        if not re.search(r"[①②③④⑤]", joined):
-            errors.append("旅程图缺少 ①②③ 编号步骤")
+        if len(re.findall(r"\b\d+\.\s", joined)) < 3:
+            errors.append("旅程图缺少 1. 2. 3. 编号步骤")
 
     for i, ln in enumerate(lines, 1):
         for p in BANNED_PHRASES:
