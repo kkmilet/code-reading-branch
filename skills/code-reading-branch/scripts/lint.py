@@ -178,6 +178,10 @@ def main() -> int:
             errors.append("旅程图缺少 1. 2. 3. 编号步骤")
 
     for i, ln in enumerate(lines, 1):
+        if ln.startswith("## ") and len(re.findall(r"[\u4e00-\u9fff]", ln)) < 2:
+            errors.append(f"L{i} 章节标题不是中文：{ln.strip()[:30]}")
+        if re.search(r"(?:[A-Za-z]+\s+){8,}", ln):
+            errors.append(f"L{i} 出现整句英文：{ln.strip()[:40]}")
         for p in BANNED_PHRASES:
             if p in ln:
                 errors.append(f"L{i} 出现空话「{p}」（不承载信息）：{ln.strip()[:40]}")

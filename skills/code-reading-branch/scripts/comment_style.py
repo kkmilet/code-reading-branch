@@ -37,6 +37,7 @@ BANNED_CHARS = {
     "【": "方括号", "】": "方括号",
 }
 CALL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\(")
+CJK_RE = re.compile(r"[\u4e00-\u9fff]")
 
 
 def width(s: str) -> int:
@@ -106,6 +107,10 @@ def main() -> int:
                 if ch in ln:
                     errors.append(f"{rel}:{i+1} 出现{kind}「{ch}」")
                     break
+
+            cjk = len(CJK_RE.findall(ln))
+            if len(ln.strip()) > 20 and cjk < 4:
+                errors.append(f"{rel}:{i+1} 疑似英文注释（中文字符只有 {cjk} 个）")
 
             names = CALL_RE.findall(ln)
             if len(names) > args.max_names:
